@@ -1,85 +1,29 @@
-import { useNavigate, useLocation } from "react-router-dom"
-import { Card, CardContent, CardHeader } from "@mui/material"
-import FavoriteIcon from '@mui/icons-material/Favorite'
-import CommentIcon from '@mui/icons-material/Comment'
+import React from 'react';
 
-const PostTitle = ({ title, score, num_comments }) => (
-  <div className="post-title" >
-    <div className="icons">
-      <span className="icon">
-        <FavoriteIcon color={"secondary"} />{score}
-      </span>
-      <span className="icon">
-        <CommentIcon />{num_comments}
-      </span>
-    </div>
-    {title}
-  </div>
-)
+const Post = ({ data }) => {
+  const { title, author, subreddit, created_utc, selftext } = data;
 
-export const Post = ({ data, kind, replies }) => {
-  const children = replies?.data?.children || []
-  const navigate = useNavigate()
-  const location = useLocation()
-
-  const onClick = (URI) => {
-    const pathname = URI.slice(0, -1)
-    if (pathname !== location.pathname) {
-      navigate(pathname)
-    }
-  }
-
-  const {
-    title,
-    author,
-    selftext,
-    body,
-    score,
-    num_comments,
-    url_overridden_by_dest
-  } = data
+  // Function to convert Unix timestamp to a readable date format
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleDateString(); // Customize the date format as needed
+  };
 
   return (
-    <li className="post" onClick={() => onClick(data.permalink)}>
-      <Card variant="elevation" elevation={4}>
-        <CardHeader 
-          title={
-            <PostTitle title={title} 
-              score={score}
-              num_comments={num_comments}
-            />
-          }
-          subheader={`Posted by: ${author}`}
-          sx={{ bgcolor: 'lightblue' }}
-        ></CardHeader>
-        <CardContent>
-          {kind === 't3' ? 
-            <p>{selftext.slice(0, 400)}</p> :
-            <p>{body}</p>
-          }
-          {data.is_video ? 
-            <video width='400' controls>
-              <source src={data.media.reddit_video.scrubber_media_url} />
-            </video> : 
-            <a target="_blank"
-              href={url_overridden_by_dest}
-            >
-              {url_overridden_by_dest}
-            </a>
-          }
-        </CardContent>
-      </Card>
-      <ul id="reply-list">
-      {children.map((post) => <Post 
-          key={post.data.id} 
-          data={post.data} 
-          kind={post.kind}
-          replies={post.kind === 't1' ?
-            post.data.replies : null
-          }
-        />
-      )}
-    </ul>
-    </li>
-  )
-}
+    <div>
+      <h2>{title}</h2>
+      <p>
+        <strong>Author:</strong> {author}
+      </p>
+      <p>
+        <strong>Subreddit:</strong> {subreddit}
+      </p>
+      <p>
+        <strong>Created:</strong> {formatDate(created_utc)}
+      </p>
+      {selftext && <p>{selftext}</p>}
+    </div>
+  );
+};
+
+export default Post;

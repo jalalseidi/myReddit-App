@@ -1,43 +1,32 @@
-import { useState, useEffect } from 'react';
 import React from 'react';
+import Post from './Post'; // Assuming Post component is in a separate file
 
-
-const Fetch = () => {
-  const [data, setData] = React.useState(null)
+function Fetch() {
+  const [data, setData] = React.useState(null);
 
   React.useEffect(() => {
     fetch('http://localhost:3000/data')
       .then((response) => response.json())
       .then((data) => setData(data))
-  }, [])
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+        setData(null); // Set data to null to indicate error
+      });
+  }, []);
 
-  if (!data) return null
+  if (!data || !data.children || data.children.length === 0) {
+    return <p>No posts available</p>;
+  }
 
   return (
-    // <ol>
-    //   {data.data.map((child) => <li>{child.children.data.title}</li>)}
-    // </ol>
-    <div>
-      {data.data.children.data.title}
-    </div>
-  )
+    <ol>
+      {data.children.map((child) => (
+        <li key={child.data.name}>
+          <Post data={child.data} />
+        </li>
+      ))}
+    </ol>
+  );
 }
-//   const [data, setData] = useState([]);
-//   useEffect(() => {
-//     fetch('http://localhost:3000/data')
-//       .then((res) => {
-//         return res.json();
-//       })
-//       .then((data) => {
-//         console.log(data);
-//         setData(data);
-//       });
-//   }, []);
-//   return (
-//     // <ol>
-//     //   {data.data.children.map((child) => <li>{child.data}</li>)}
-//     // </ol>
-//     <div>{data.data.children.title} </div>
-//   );
-// };
+
 export default Fetch;
