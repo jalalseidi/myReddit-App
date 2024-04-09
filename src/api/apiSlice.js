@@ -11,9 +11,12 @@ export const apiSlice = createApi({
   endpoints: (builder) => ({
     getData: builder.query({
       query: () => '/data', // Endpoint URL (relative to base URL)
+      transformResponse: (response) => response.data.children
     }),
   }),
 });
+
+
 
 // Export the generated hooks for querying the API
 export const { useGetDataQuery } = apiSlice;
